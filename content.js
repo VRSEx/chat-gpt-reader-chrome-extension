@@ -2,9 +2,9 @@ let prevText = "";
 let isPlaying = false;
 let playbackInterval;
 
-function readAloud(text) {
+function readAloud(text, lang) {
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "ja-JP";
+  utterance.lang = lang;
   window.speechSynthesis.speak(utterance);
 }
 
@@ -19,7 +19,8 @@ function processParagraphs() {
   const newText = allText.substring(prevText.length);
 
   if (newText) {
-    readAloud(newText);
+    const lang = document.querySelector("#language-selector").value;
+    readAloud(newText, lang);
     prevText = allText;
   }
 }
@@ -38,6 +39,32 @@ function togglePlayback(play) {
 function isChatOpenAIUrl() {
   return window.location.href.startsWith("https://chat.openai.com");
 }
+
+function addLanguageSelector() {
+  const chatHeader = document.querySelector(".chat-header");
+
+  const languageSelector = document.createElement("select");
+  languageSelector.id = "language-selector";
+
+  const englishOption = document.createElement("option");
+  englishOption.value = "en-US";
+  englishOption.textContent = "English";
+  languageSelector.appendChild(englishOption);
+
+  const japaneseOption = document.createElement("option");
+  japaneseOption.value = "ja-JP";
+  japaneseOption.textContent = "Japanese";
+  languageSelector.appendChild(japaneseOption);
+
+  const spanishOption = document.createElement("option");
+  spanishOption.value = "es-ES";
+  spanishOption.textContent = "Spanish";
+  languageSelector.appendChild(spanishOption);
+
+  chatHeader.appendChild(languageSelector);
+}
+
+addLanguageSelector();
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (!isChatOpenAIUrl()) {
